@@ -1,0 +1,154 @@
+import 'package:flutter/material.dart';
+import 'package:fpdart/fpdart.dart' hide State;
+import '../core/context/app_context.dart';
+import '../utils/lnurl_utils.dart';
+import '../utils/ln_address.dart';
+import '../widgets/async_action_button.dart';
+import 'ln_amount_screen.dart';
+import '../widgets/address_field.dart';
+
+class LightningAddressScreen extends StatefulWidget {
+  final AppContext appContext;
+
+  const LightningAddressScreen({Key? key, required this.appContext})
+    : super(key: key);
+
+  @override
+  State<LightningAddressScreen> createState() => _LightningAddressScreenState();
+}
+
+class _LightningAddressScreenState extends State<LightningAddressScreen> {
+  final TextEditingController _addressController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  // Dummy lightning addresses for design testing
+  final List<String> _dummyAddresses = [
+    'alice@getalby.com',
+    'bob@wallet.com',
+    'charlie@lightning.network',
+    'diana@strike.me',
+    'eve@muun.com',
+  ];
+
+  List<String> _filteredAddresses = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredAddresses = _dummyAddresses;
+    _addressController.addListener(_onTextChanged);
+  }
+
+  @override
+  void dispose() {
+    _addressController.dispose();
+    super.dispose();
+  }
+
+  void _onTextChanged() {
+    setState(() {
+      final query = _addressController.text.toLowerCase();
+
+      _filteredAddresses =
+          _dummyAddresses
+              .where((address) => address.toLowerCase().contains(query))
+              .toList();
+    });
+  }
+
+  void _selectAddress(String address) {
+    _addressController.text = address;
+  }
+
+  Future<Either<String, Unit>> _handleContinue() async {
+    // Validate and create LightningAddress
+    final lightningAddressResult = LightningAddress.create(
+      _addressController.text.trim(),
+    );
+
+    return lightningAddressResult.fold((error) => Future.value(left(error)), (
+      lightningAddress,
+    ) async {
+      final result = await getLnurlPayInfo(lightningAddress).run();
+
+      return result.map((payInfo) {
+        if (mounted) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder:
+                  (_) => LightningAmountScreen(
+                    lightningAddress: lightningAddress,
+                    payInfo: payInfo,
+                    appContext: widget.appContext,
+                  ),
+            ),
+          );
+        }
+        return unit;
+      });
+    });
+  }
+
+  Widget _buildAddressCard(String address) {
+    final query = _addressController.text.toLowerCase();
+
+    return Card(
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(8.0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        leading: CircleAvatar(
+          backgroundColor: Colors.deepPurple.withOpacity(0.1),
+          child: const Icon(Icons.bolt, color: Colors.deepPurple, size: 20),
+        ),
+        title: Text(
+          address,
+          style: const TextStyle(fontWeight: FontWeight.w500),
+        ),
+        onTap: () => _selectAddress(address),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(''),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                LightningAddressField(
+                  controller: _addressController,
+                  autofocus: true,
+                ),
+
+                const SizedBox(height: 24),
+
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _filteredAddresses.length,
+                    itemBuilder: (context, index) {
+                      return _buildAddressCard(_filteredAddresses[index]);
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                AsyncActionButton(text: 'Continue', onPressed: _handleContinue),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
