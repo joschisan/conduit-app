@@ -17,6 +17,22 @@ Widget _buildPaymentIcon() => Container(
   child: const Icon(Icons.bolt, size: 40, color: Colors.deepPurple),
 );
 
+Widget _buildLightningAddressDisplay(Option<String> lightningAddress) {
+  return lightningAddress.fold(
+    () => const SizedBox.shrink(), // None case - show nothing
+    (address) => Column(
+      children: [
+        Text(
+          address,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 32),
+      ],
+    ),
+  );
+}
+
 Widget _buildAmountDisplay(String amountText) => Text(
   amountText,
   style: const TextStyle(
@@ -74,6 +90,7 @@ class PayInvoiceScreen extends StatelessWidget {
   final bool displayDescription;
   final String rawInvoice;
   final AppContext appContext;
+  final Option<String> lightningAddress;
 
   const PayInvoiceScreen({
     Key? key,
@@ -81,6 +98,7 @@ class PayInvoiceScreen extends StatelessWidget {
     required this.displayDescription,
     required this.rawInvoice,
     required this.appContext,
+    this.lightningAddress = const None(),
   }) : super(key: key);
 
   Future<Either<String, Unit>> _payInvoice(BuildContext context) async {
@@ -114,6 +132,7 @@ class PayInvoiceScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    _buildLightningAddressDisplay(lightningAddress),
                     _buildPaymentIcon(),
                     const SizedBox(height: 32),
                     _buildAmountDisplay(decodedInvoice.formattedAmount),
