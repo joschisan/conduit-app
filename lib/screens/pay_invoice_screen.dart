@@ -8,13 +8,13 @@ import 'package:fpdart/fpdart.dart' hide State;
 
 // Pure UI building functions
 Widget _buildPaymentIcon() => Container(
-  width: 80,
-  height: 80,
+  width: 60,
+  height: 60,
   decoration: BoxDecoration(
     color: Colors.deepPurple.withOpacity(0.1),
-    borderRadius: BorderRadius.circular(40),
+    borderRadius: BorderRadius.circular(30),
   ),
-  child: const Icon(Icons.bolt, size: 40, color: Colors.deepPurple),
+  child: const Icon(Icons.arrow_upward, size: 40, color: Colors.deepPurple),
 );
 
 Widget _buildLightningAddressDisplay(Option<String> lightningAddress) {
@@ -27,7 +27,7 @@ Widget _buildLightningAddressDisplay(Option<String> lightningAddress) {
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 32),
+        const SizedBox(height: 24),
       ],
     ),
   );
@@ -36,7 +36,7 @@ Widget _buildLightningAddressDisplay(Option<String> lightningAddress) {
 Widget _buildAmountDisplay(String amountText) => Text(
   amountText,
   style: const TextStyle(
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: FontWeight.bold,
     color: Colors.white,
   ),
@@ -137,9 +137,9 @@ class PayInvoiceScreen extends StatelessWidget {
                   children: [
                     _buildLightningAddressDisplay(lightningAddress),
                     _buildPaymentIcon(),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
                     _buildAmountDisplay(decodedInvoice.formattedAmount),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
                     _buildInvoiceDetails(
                       context,
                       decodedInvoice,
