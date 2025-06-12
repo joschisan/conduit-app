@@ -102,12 +102,15 @@ class PayInvoiceScreen extends StatelessWidget {
   }) : super(key: key);
 
   Future<Either<String, Unit>> _payInvoice(BuildContext context) async {
-    final result = await api_utils.payInvoice(appContext, rawInvoice).run();
+    final result = await api_utils.payInvoice(
+      appContext, 
+      rawInvoice,
+      lightningAddress,
+    ).run();
 
     return result.map((_) {
       if (context.mounted) {
-        NotificationUtils.showSuccess('Payment sent successfully!');
-        Navigator.of(context).pop(true); // Return true to indicate success
+        Navigator.of(context);
       }
       return unit;
     });

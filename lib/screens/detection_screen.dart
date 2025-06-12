@@ -87,6 +87,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
                   displayDescription: true,
                   rawInvoice: invoice,
                   appContext: widget.appContext,
+                  lightningAddress: none<String>(),
                 ),
           ),
         );

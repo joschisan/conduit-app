@@ -62,12 +62,22 @@ TaskEither<String, String> createInvoice(
 /// Returns TaskEither<String, Unit> where:
 /// - Left contains error message
 /// - Right contains unit (success)
-TaskEither<String, Unit> payInvoice(AppContext appContext, String invoice) {
+TaskEither<String, Unit> payInvoice(
+  AppContext appContext, 
+  String invoice,
+  Option<String> lightningAddress,
+) {
   return safeTask(
         () => http.post(
           Uri.parse('${appContext.baseUrl}/user/bolt11/send'),
           headers: appContext.headers,
-          body: jsonEncode({'invoice': invoice.trim()}),
+          body: jsonEncode({
+            'invoice': invoice.trim(),
+            ...lightningAddress.fold(
+              () => <String, dynamic>{}, // None case - empty map
+              (address) => {'lightning_address': address}, // Some case - include field
+            ),
+          }),
         ),
       )
       .filter(
