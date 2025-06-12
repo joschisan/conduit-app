@@ -126,7 +126,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
                           (invoice) => invoice,
                         ),
                         style: const TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.center,

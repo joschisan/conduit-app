@@ -61,7 +61,7 @@ fp.Either<String, String> _validateDescription(String description) {
     return fp.left('Description cannot exceed 50 characters');
   }
 
-  return fp.right(description.isEmpty ? 'Lightning Payment' : description);
+  return fp.right(description);
 }
 
 // Public combined validation

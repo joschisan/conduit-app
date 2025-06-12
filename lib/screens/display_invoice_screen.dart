@@ -10,11 +10,19 @@ Widget _buildInvoiceContent(BuildContext context, String invoice, int amount) =>
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.bolt, color: Colors.deepPurple, size: 48),
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.deepPurple.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: const Icon(Icons.arrow_downward, color: Colors.deepPurple, size: 32),
+            ),
             const SizedBox(width: 8),
             Text(
               '$amount sats',
-              style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ],
         ),
