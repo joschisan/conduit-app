@@ -172,13 +172,26 @@ void navigateToReceive(BuildContext context, AppContext appContext) =>
       MaterialPageRoute(builder: (_) => ReceiveScreen(appContext: appContext)),
     );
 
-void navigateToSend(BuildContext context, AppContext appContext) =>
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => SendScreen(appContext: appContext)),
-    );
+void navigateToSend(BuildContext context, AppContext appContext, List<Payment> payments) {
+  // Extract unique lightning addresses from payments
+  final lightningAddresses = payments
+      .expand((payment) => payment.lightningAddress.fold(
+        () => <String>[], // None case - empty list
+        (address) => [address], // Some case - single item list
+      ))
+      .toSet()
+      .toList();
+
+  Navigator.of(context).push(
+    MaterialPageRoute(builder: (_) => SendScreen(
+      appContext: appContext,
+      lightningAddresses: lightningAddresses,
+    )),
+  );
+}
 
 // Functional composition for action buttons
-Widget buildActionButtons(BuildContext context, AppContext appContext) => Row(
+Widget buildActionButtons(BuildContext context, AppContext appContext, List<Payment> payments) => Row(
   children: [
     buildActionButton(
       label: 'Receive',
@@ -190,7 +203,7 @@ Widget buildActionButtons(BuildContext context, AppContext appContext) => Row(
       label: 'Send',
       icon: Icons.arrow_upward,
       padding: const EdgeInsets.only(left: 6.0),
-      onPressed: () => navigateToSend(context, appContext),
+      onPressed: () => navigateToSend(context, appContext, payments),
     ),
   ],
 );
@@ -257,6 +270,7 @@ class _HomeScreenState extends State<HomeScreen> {
     required String status,
     required int createdAt,
     required String paymentType,
+    required fp.Option<String> lightningAddress,
   }) {
     final payment = Payment(
       paymentHash: id,
@@ -264,6 +278,7 @@ class _HomeScreenState extends State<HomeScreen> {
       status: status,
       createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt * 1000),
       paymentType: paymentType,
+      lightningAddress: lightningAddress,
     );
 
     setState(() {
@@ -315,7 +330,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               buildBalance(_balanceSats),
               const SizedBox(height: 24),
-              buildActionButtons(context, widget.appContext),
+              buildActionButtons(context, widget.appContext, _payments),
               const SizedBox(height: 12),
               Expanded(
                 child: ListView.builder(

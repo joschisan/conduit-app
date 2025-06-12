@@ -9,9 +9,13 @@ import '../widgets/address_field.dart';
 
 class LightningAddressScreen extends StatefulWidget {
   final AppContext appContext;
+  final List<String> availableAddresses;
 
-  const LightningAddressScreen({Key? key, required this.appContext})
-    : super(key: key);
+  const LightningAddressScreen({
+    Key? key, 
+    required this.appContext,
+    required this.availableAddresses,
+  }) : super(key: key);
 
   @override
   State<LightningAddressScreen> createState() => _LightningAddressScreenState();
@@ -21,21 +25,12 @@ class _LightningAddressScreenState extends State<LightningAddressScreen> {
   final TextEditingController _addressController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  // Dummy lightning addresses for design testing
-  final List<String> _dummyAddresses = [
-    'alice@getalby.com',
-    'bob@wallet.com',
-    'charlie@lightning.network',
-    'diana@strike.me',
-    'eve@muun.com',
-  ];
-
   List<String> _filteredAddresses = [];
 
   @override
   void initState() {
     super.initState();
-    _filteredAddresses = _dummyAddresses;
+    _filteredAddresses = widget.availableAddresses;
     _addressController.addListener(_onTextChanged);
   }
 
@@ -50,7 +45,7 @@ class _LightningAddressScreenState extends State<LightningAddressScreen> {
       final query = _addressController.text.toLowerCase();
 
       _filteredAddresses =
-          _dummyAddresses
+          widget.availableAddresses
               .where((address) => address.toLowerCase().contains(query))
               .toList();
     });

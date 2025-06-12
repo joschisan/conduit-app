@@ -1,9 +1,12 @@
+import 'package:fpdart/fpdart.dart';
+
 class Payment {
   final String paymentHash;
   final int amountMsat;
   final String status;
   final DateTime createdAt;
   final String paymentType;
+  final Option<String> lightningAddress;
 
   Payment({
     required this.paymentHash,
@@ -11,6 +14,7 @@ class Payment {
     required this.status,
     required this.createdAt,
     required this.paymentType,
+    required this.lightningAddress,
   });
 
   // Helper getters

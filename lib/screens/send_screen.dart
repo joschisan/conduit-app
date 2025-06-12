@@ -69,8 +69,13 @@ Widget _buildPasteButton(VoidCallback? onPaste) => ElevatedButton.icon(
 
 class SendScreen extends StatefulWidget {
   final AppContext appContext;
+  final List<String> lightningAddresses;
 
-  const SendScreen({super.key, required this.appContext});
+  const SendScreen({
+    super.key, 
+    required this.appContext,
+    required this.lightningAddresses,
+  });
 
   @override
   State<SendScreen> createState() => _SendScreenState();
@@ -117,7 +122,10 @@ class _SendScreenState extends State<SendScreen> {
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder:
-            (context) => LightningAddressScreen(appContext: widget.appContext),
+            (context) => LightningAddressScreen(
+              appContext: widget.appContext,
+              availableAddresses: widget.lightningAddresses,
+            ),
       ),
     );
   }
