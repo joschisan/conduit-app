@@ -238,9 +238,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Direct state variables instead of HomeState class
-  fp.Option<int> _balanceSats = const fp.None();
-  List<Payment> _payments = const [];
+  fp.Option<int> _balanceSats = fp.None();
+  List<Payment> _payments = [];
 
   @override
   void initState() {
@@ -283,40 +282,31 @@ class _HomeScreenState extends State<HomeScreen> {
     required String paymentType,
     required fp.Option<String> lightningAddress,
   }) {
-    final payment = Payment(
-      paymentHash: id,
-      amountMsat: amountMsat,
-      status: status,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt * 1000),
-      paymentType: paymentType,
-      lightningAddress: lightningAddress,
-    );
+    final existingIndex = _payments.indexWhere((p) => p.id == id);
 
-    setState(() {
-      _payments = _addToPaymentsList(_payments, payment);
-    });
+    if (existingIndex != -1) {
+      // update status of existing payment
+      setState(() {
+        _payments[existingIndex].status = status;
+      });
+    } else {
+      // Add new payment to front
+      final payment = Payment(
+        id: id,
+        amountMsat: amountMsat,
+        status: status,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt * 1000),
+        paymentType: paymentType,
+        lightningAddress: lightningAddress,
+      );
+
+      setState(() {
+        _payments.insert(0, payment);
+      });
+    }
   }
 
   void _handleNotification(String message) => handleNotification(message);
-
-  // Pure function to add/update payment in list (moved from home_state.dart)
-  List<Payment> _addToPaymentsList(List<Payment> current, Payment newPayment) {
-    final existingIndex = current.indexWhere(
-      (p) => p.paymentHash == newPayment.paymentHash,
-    );
-
-    if (existingIndex != -1) {
-      // Replace existing payment
-      return current
-          .asMap()
-          .entries
-          .map((entry) => entry.key == existingIndex ? newPayment : entry.value)
-          .toList();
-    } else {
-      // Add new payment to front
-      return [newPayment, ...current];
-    }
-  }
 
   @override
   void dispose() {
