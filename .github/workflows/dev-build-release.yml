@@ -1,0 +1,38 @@
+name: Dev APK Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --debug
+
+      - name: Upload to Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: dev-latest
+          name: "Latest Dev Build"
+          artifacts: "build/app/outputs/flutter-apk/app-debug.apk"
+          allowUpdates: true
+          replacesArtifacts: true
+          draft: false
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
