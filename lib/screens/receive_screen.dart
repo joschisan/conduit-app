@@ -15,7 +15,7 @@ Widget _buildReceiveContent(
   children: [
     Text(
       lightningAddress,
-      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
       textAlign: TextAlign.center,
     ),
     QrCodeWithCopy(
