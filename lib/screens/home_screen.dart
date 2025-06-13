@@ -113,10 +113,7 @@ Widget buildPaymentTile(Payment payment) => Card(
                 ),
                 child: Text(
                   '${payment.displayAmount} sats',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ),
             )
@@ -172,26 +169,40 @@ void navigateToReceive(BuildContext context, AppContext appContext) =>
       MaterialPageRoute(builder: (_) => ReceiveScreen(appContext: appContext)),
     );
 
-void navigateToSend(BuildContext context, AppContext appContext, List<Payment> payments) {
+void navigateToSend(
+  BuildContext context,
+  AppContext appContext,
+  List<Payment> payments,
+) {
   // Extract unique lightning addresses from payments
-  final lightningAddresses = payments
-      .expand((payment) => payment.lightningAddress.fold(
-        () => <String>[], // None case - empty list
-        (address) => [address], // Some case - single item list
-      ))
-      .toSet()
-      .toList();
+  final lightningAddresses =
+      payments
+          .expand(
+            (payment) => payment.lightningAddress.fold(
+              () => <String>[], // None case - empty list
+              (address) => [address], // Some case - single item list
+            ),
+          )
+          .toSet()
+          .toList();
 
   Navigator.of(context).push(
-    MaterialPageRoute(builder: (_) => SendScreen(
-      appContext: appContext,
-      lightningAddresses: lightningAddresses,
-    )),
+    MaterialPageRoute(
+      builder:
+          (_) => SendScreen(
+            appContext: appContext,
+            lightningAddresses: lightningAddresses,
+          ),
+    ),
   );
 }
 
 // Functional composition for action buttons
-Widget buildActionButtons(BuildContext context, AppContext appContext, List<Payment> payments) => Row(
+Widget buildActionButtons(
+  BuildContext context,
+  AppContext appContext,
+  List<Payment> payments,
+) => Row(
   children: [
     buildActionButton(
       label: 'Receive',

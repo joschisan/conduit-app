@@ -24,9 +24,7 @@ TaskEither<String, DecodedInvoice> quoteBolt11Invoice(
       .mapLeft((_) => 'Failed to connect to server')
       .flatMap(transformResponse)
       .flatMap((body) => safe(() => jsonDecode(body) as Map<String, dynamic>))
-      .flatMap(
-        (jsonData) => TaskEither.fromEither(DecodedInvoice.fromJson(jsonData)),
-      );
+      .flatMap((json) => TaskEither.fromEither(DecodedInvoice.fromJson(json)));
 }
 
 /// Create a Lightning invoice with functional error handling
@@ -60,7 +58,7 @@ TaskEither<String, String> createInvoice(
 /// - Left contains error message
 /// - Right contains unit (success)
 TaskEither<String, Unit> payInvoice(
-  AppContext appContext, 
+  AppContext appContext,
   String invoice,
   Option<String> lightningAddress,
 ) {
@@ -72,7 +70,9 @@ TaskEither<String, Unit> payInvoice(
             'invoice': invoice.trim(),
             ...lightningAddress.fold(
               () => <String, dynamic>{}, // None case - empty map
-              (address) => {'lightning_address': address}, // Some case - include field
+              (address) => {
+                'lightning_address': address,
+              }, // Some case - include field
             ),
           }),
         ),

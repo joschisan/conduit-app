@@ -11,16 +11,3 @@ TaskEither<String, T> safe<T>(T Function() task) {
     Either.tryCatch(task, (error, _) => error.toString()),
   );
 }
-
-/// Extension to add filter functionality to TaskEither
-/// Allows filtering values with a predicate, converting failures to Left
-extension TaskEitherFilter<L, R> on TaskEither<L, R> {
-  TaskEither<L, R> filter(bool Function(R) predicate, L Function(R) onFalse) {
-    return flatMap(
-      (value) =>
-          predicate(value)
-              ? TaskEither.right(value)
-              : TaskEither.left(onFalse(value)),
-    );
-  }
-}

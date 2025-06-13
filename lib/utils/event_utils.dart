@@ -39,7 +39,9 @@ Either<String, void> parseAndHandleEvent(
               status: data['status'] as String,
               createdAt: data['created_at'] as int,
               paymentType: data['payment_type'] as String,
-              lightningAddress: Option.fromNullable(data['lightning_address'] as String?),
+              lightningAddress: Option.fromNullable(
+                data['lightning_address'] as String?,
+              ),
             ),
             (error, _) => 'Payment parsing error: $error',
           );

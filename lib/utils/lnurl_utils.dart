@@ -4,6 +4,7 @@ import 'dart:convert';
 import '../models/lnurl_pay_info.dart';
 import 'ln_address.dart';
 import 'fp_utils.dart';
+import 'http_utils.dart';
 
 /// Fetches and parses LNURL-pay information for a Lightning Address
 /// Returns TaskEither<String, LnurlPayInfo> where:
@@ -18,18 +19,11 @@ TaskEither<String, LnurlPayInfo> getLnurlPayInfo(
           headers: {'Content-Type': 'application/json'},
         ),
       )
-      .filter(
-        (r) => r.statusCode == 200,
-        (r) => 'Failed to fetch LNURL-pay info: HTTP ${r.statusCode}',
-      )
-      .flatMap((r) => safe(() => jsonDecode(r.body) as Map<String, dynamic>))
-      .filter(
-        (data) => data['tag'] == 'payRequest',
-        (data) => 'Invalid LNURL-pay endpoint: missing or invalid tag',
-      )
-      .flatMap(
-        (jsonData) => TaskEither.fromEither(LnurlPayInfo.fromJson(jsonData)),
-      );
+      .mapLeft((_) => 'Failed to connect to lightning address')
+      .flatMap(transformResponse)
+      .flatMap((body) => safe(() => jsonDecode(body) as Map<String, dynamic>))
+      .flatMap((json) => TaskEither.fromEither(LnurlPayInfo.fromJson(json)))
+      .mapLeft((_) => 'Invalid response');
 }
 
 /// Gets a Lightning invoice from an LNURL-pay callback URL
@@ -43,14 +37,15 @@ TaskEither<String, String> getLnurlPayInvoice(
   final Map<String, String> queryParameters = {'amount': amountMsat.toString()};
   final headers = {'Content-Type': 'application/json'};
 
-  return safe(
-        () => Uri.parse(callbackUrl).replace(queryParameters: queryParameters),
+  return safeTask(
+        () => http.get(
+          Uri.parse(callbackUrl).replace(queryParameters: queryParameters),
+          headers: headers,
+        ),
       )
-      .flatMap((uri) => safeTask(() => http.get(uri, headers: headers)))
-      .filter(
-        (r) => r.statusCode == 200,
-        (r) => 'Failed to get LNURL-pay invoice: HTTP ${r.statusCode}',
-      )
-      .flatMap((r) => safe(() => jsonDecode(r.body) as Map<String, dynamic>))
-      .flatMap((data) => safe(() => data['pr'].toString()));
+      .mapLeft((_) => 'Failed to connect to lightning address')
+      .flatMap(transformResponse)
+      .flatMap((body) => safe(() => jsonDecode(body) as Map<String, dynamic>))
+      .flatMap((data) => safe(() => data['pr'] as String))
+      .mapLeft((_) => 'Invalid response');
 }

@@ -102,11 +102,10 @@ class PayInvoiceScreen extends StatelessWidget {
   }) : super(key: key);
 
   Future<Either<String, Unit>> _payInvoice(BuildContext context) async {
-    final result = await api_utils.payInvoice(
-      appContext, 
-      rawInvoice,
-      lightningAddress,
-    ).run();
+    final result =
+        await api_utils
+            .payInvoice(appContext, rawInvoice, lightningAddress)
+            .run();
 
     return result.map((_) {
       if (context.mounted) {

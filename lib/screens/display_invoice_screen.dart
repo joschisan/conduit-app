@@ -17,7 +17,11 @@ Widget _buildInvoiceContent(BuildContext context, String invoice, int amount) =>
                 color: Colors.deepPurple.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(24),
               ),
-              child: const Icon(Icons.arrow_downward, color: Colors.deepPurple, size: 32),
+              child: const Icon(
+                Icons.arrow_downward,
+                color: Colors.deepPurple,
+                size: 32,
+              ),
             ),
             const SizedBox(width: 8),
             Text(

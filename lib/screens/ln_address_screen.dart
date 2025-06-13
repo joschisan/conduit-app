@@ -12,7 +12,7 @@ class LightningAddressScreen extends StatefulWidget {
   final List<String> availableAddresses;
 
   const LightningAddressScreen({
-    Key? key, 
+    Key? key,
     required this.appContext,
     required this.availableAddresses,
   }) : super(key: key);

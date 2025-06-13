@@ -6,7 +6,7 @@ TaskEither<String, String> transformResponse(http.Response response) {
   if (response.statusCode == 200) {
     return TaskEither.right(response.body);
   }
-  
+
   // Map status codes to human readable messages
   switch (response.statusCode) {
     case 400:
@@ -18,4 +18,4 @@ TaskEither<String, String> transformResponse(http.Response response) {
     default:
       return TaskEither.left('Something went wrong, please try again');
   }
-} 
+}

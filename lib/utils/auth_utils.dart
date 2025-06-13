@@ -3,6 +3,7 @@ import 'package:fpdart/fpdart.dart';
 import 'dart:convert';
 import 'account.dart';
 import 'fp_utils.dart';
+import 'http_utils.dart';
 
 /// Login function with functional error handling
 /// Returns TaskEither<String, String> where:
@@ -21,12 +22,11 @@ TaskEither<String, String> login(AccountCredentials credentials) {
           }),
         ),
       )
-      .filter(
-        (r) => r.statusCode == 200,
-        (r) => 'Login failed: HTTP ${r.statusCode}',
-      )
-      .flatMap((r) => safe(() => jsonDecode(r.body) as Map<String, dynamic>))
-      .flatMap((data) => safe(() => data['token'] as String));
+      .mapLeft((_) => 'Failed to connect to server')
+      .flatMap(transformResponse)
+      .flatMap((body) => safe(() => jsonDecode(body) as Map<String, dynamic>))
+      .flatMap((data) => safe(() => data['token'] as String))
+      .mapLeft((_) => 'Invalid response');
 }
 
 /// Register function with functional error handling
@@ -46,10 +46,9 @@ TaskEither<String, String> register(AccountCredentials credentials) {
           }),
         ),
       )
-      .filter(
-        (r) => r.statusCode == 200,
-        (r) => 'Registration failed: HTTP ${r.statusCode}',
-      )
-      .flatMap((r) => safe(() => jsonDecode(r.body) as Map<String, dynamic>))
-      .flatMap((data) => safe(() => data['token'] as String));
+      .mapLeft((_) => 'Failed to connect to server')
+      .flatMap(transformResponse)
+      .flatMap((body) => safe(() => jsonDecode(body) as Map<String, dynamic>))
+      .flatMap((data) => safe(() => data['token'] as String))
+      .mapLeft((_) => 'Invalid response');
 }

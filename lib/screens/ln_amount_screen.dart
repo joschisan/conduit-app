@@ -107,7 +107,9 @@ class _LightningAmountScreenState extends State<LightningAmountScreen> {
                                 displayDescription: false,
                                 rawInvoice: invoice,
                                 appContext: widget.appContext,
-                                lightningAddress: some(widget.lightningAddress.fullAddress),
+                                lightningAddress: some(
+                                  widget.lightningAddress.fullAddress,
+                                ),
                               ),
                         ),
                       );

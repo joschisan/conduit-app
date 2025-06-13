@@ -72,7 +72,7 @@ class SendScreen extends StatefulWidget {
   final List<String> lightningAddresses;
 
   const SendScreen({
-    super.key, 
+    super.key,
     required this.appContext,
     required this.lightningAddresses,
   });

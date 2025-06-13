@@ -48,7 +48,9 @@ class DecodedInvoice {
                       (value) =>
                           value is String
                               ? Either.right(value)
-                              : Either.left('Invalid description: must be a string'),
+                              : Either.left(
+                                'Invalid description: must be a string',
+                              ),
                     )
                     .flatMap(
                       (description) => Either.fromNullable(
@@ -65,7 +67,9 @@ class DecodedInvoice {
                           )
                           .map(
                             (expirySecs) => DecodedInvoice(
-                              amount: amountMsat ~/ 1000, // Convert millisats to sats
+                              amount:
+                                  amountMsat ~/
+                                  1000, // Convert millisats to sats
                               fee: feeMsat ~/ 1000, // Convert millisats to sats
                               description: description,
                               expirySecs: expirySecs,
