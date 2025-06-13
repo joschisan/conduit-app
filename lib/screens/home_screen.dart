@@ -238,6 +238,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   fp.Option<int> _balanceSats = fp.None();
   List<Payment> _payments = [];
 
@@ -302,6 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       setState(() {
         _payments.insert(0, payment);
+        _listKey.currentState?.insertItem(0);  // Trigger the animation
       });
     }
   }
@@ -334,9 +336,20 @@ class _HomeScreenState extends State<HomeScreen> {
               buildActionButtons(context, widget.appContext, _payments),
               const SizedBox(height: 12),
               Expanded(
-                child: ListView.builder(
-                  itemCount: _payments.length,
-                  itemBuilder: (_, index) => buildPaymentTile(_payments[index]),
+                child: AnimatedList(
+                  key: _listKey,
+                  initialItemCount: _payments.length,
+                  itemBuilder: (context, index, animation) {
+                    return SlideTransition(
+                      position: animation.drive(
+                        Tween(
+                          begin: const Offset(1.0, 0.0),
+                          end: Offset.zero,
+                        ).chain(CurveTween(curve: Curves.easeOut)),
+                      ),
+                      child: buildPaymentTile(_payments[index]),
+                    );
+                  },
                 ),
               ),
             ],
