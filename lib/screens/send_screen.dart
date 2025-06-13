@@ -91,17 +91,20 @@ class _SendScreenState extends State<SendScreen> {
   }
 
   void _onDetect(BarcodeCapture capture) {
-    final List<Barcode> barcodes = capture.barcodes;
-    if (barcodes.isNotEmpty && barcodes.first.rawValue != null) {
-      _processInput(barcodes.first.rawValue!);
-    }
+    if (capture.barcodes.isEmpty) return;
+
+    if (capture.barcodes.first.rawValue == null) return;
+
+    _processInput(capture.barcodes.first.rawValue!);
   }
 
-  Future<void> _processInput(String input) async {
+  void _processInput(String input) {
     detectInputType(input).fold(
       () => _showError('Invalid Lightning address or invoice format'),
-      (detectedData) async {
-        await Navigator.of(context).push(
+      (detectedData) {
+        _controller.stop();
+        
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder:
                 (_) => DetectionScreen(
