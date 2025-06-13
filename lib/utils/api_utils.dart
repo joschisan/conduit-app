@@ -20,11 +20,9 @@ TaskEither<String, DecodedInvoice> quoteBolt11Invoice(
           body: jsonEncode({'invoice': invoice.trim()}),
         ),
       )
-      .filter(
-        (r) => r.statusCode == 200,
-        (r) => 'Failed to get invoice quote: HTTP ${r.statusCode}',
-      )
-      .flatMap((r) => safe(() => jsonDecode(r.body) as Map<String, dynamic>))
+      .mapLeft((_) => 'Failed to connect to server')
+      .flatMap(transformResponse)
+      .flatMap((body) => safe(() => jsonDecode(body) as Map<String, dynamic>))
       .flatMap(
         (jsonData) => TaskEither.fromEither(DecodedInvoice.fromJson(jsonData)),
       );
@@ -50,11 +48,9 @@ TaskEither<String, String> createInvoice(
           }),
         ),
       )
-      .filter(
-        (r) => r.statusCode == 200,
-        (r) => 'Failed to create invoice: HTTP ${r.statusCode}',
-      )
-      .flatMap((r) => safe(() => jsonDecode(r.body) as Map<String, dynamic>))
+      .mapLeft((_) => 'Failed to connect to server')
+      .flatMap(transformResponse)
+      .flatMap((body) => safe(() => jsonDecode(body) as Map<String, dynamic>))
       .flatMap((data) => safe(() => data['invoice'] as String));
 }
 
@@ -80,9 +76,25 @@ TaskEither<String, Unit> payInvoice(
           }),
         ),
       )
-      .filter(
-        (r) => r.statusCode == 200,
-        (r) => 'Failed to pay invoice: HTTP ${r.statusCode}',
-      )
+      .mapLeft((_) => 'Failed to connect to server')
+      .flatMap(transformResponse)
       .map((_) => unit);
+}
+
+TaskEither<String, String> transformResponse(http.Response response) {
+      if (response.statusCode == 200) {
+        return TaskEither.right(response.body);
+      }
+      
+      // Map status codes to human readable messages
+      switch (response.statusCode) {
+        case 400:
+          return TaskEither.left(response.body ?? 'Invalid request');
+        case 401:
+          return TaskEither.left('Session expired, please sign in again');
+        case 429:
+          return TaskEither.left('Too many requests, please try again later');
+        default:
+          return TaskEither.left('Something went wrong, please try again');
+      }
 }
