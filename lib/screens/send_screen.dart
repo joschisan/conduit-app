@@ -99,11 +99,11 @@ class _SendScreenState extends State<SendScreen> {
   }
 
   void _processInput(String input) {
-    detectInputType(input).fold(
+    detectInputType(input.toLowerCase().trim()).fold(
       () => _showError('Invalid Lightning address or invoice format'),
       (detectedData) {
         _controller.stop();
-        
+
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder:
