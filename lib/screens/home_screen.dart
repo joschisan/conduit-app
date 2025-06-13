@@ -7,7 +7,7 @@ import '../screens/receive_screen.dart';
 import '../screens/send_screen.dart';
 import '../utils/notification_utils.dart';
 import '../utils/event_utils.dart';
-
+import '../screens/login_screen.dart';
 // Pure helper functions with functional programming patterns
 IconData getStatusIcon(Payment payment) => switch (payment) {
   _ when payment.isIncoming => Icons.arrow_downward,
@@ -323,7 +323,9 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text(''),
         leading: IconButton(
           icon: const Icon(Icons.logout),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          ),
         ),
       ),
       body: SafeArea(

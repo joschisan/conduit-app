@@ -48,14 +48,8 @@ class _LoginScreenState extends State<LoginScreen> {
               token: token,
             );
 
-            // Reset the login screen
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginScreen()),
-            );
-
             // Navigate to HomeScreen
-            Navigator.of(context).push(
+            Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (context) => HomeScreen(appContext: appContext),
               ),

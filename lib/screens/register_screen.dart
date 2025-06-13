@@ -56,14 +56,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               token: token,
             );
 
-            // Navigate to LoginScreen
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginScreen()),
-            );
-
             // Navigate to HomeScreen
-            Navigator.of(context).push(
+            Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (context) => HomeScreen(appContext: appContext),
               ),

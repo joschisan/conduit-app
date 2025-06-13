@@ -109,7 +109,7 @@ class PayInvoiceScreen extends StatelessWidget {
 
     return result.map((_) {
       if (context.mounted) {
-        Navigator.of(context);
+        Navigator.of(context).popUntil((route) => route.isFirst);  // Pop back to home screen
       }
       return unit;
     });
